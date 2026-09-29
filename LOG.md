@@ -112,3 +112,54 @@ After the change:
 
 - `frontend/style.css`
 - `LOG.md`
+
+## CC-02 — Can't read anything in dark mode
+
+### Reproduction
+
+1. Started the application locally.
+2. Opened the menu page.
+3. Switched the application to dark mode.
+4. Observed that dish names and prices on the menu cards became very difficult to read because they were displayed in a dark color against the dark card background.
+5. Switched back to light mode and confirmed that the text was readable.
+
+### Expected Behavior
+
+Dish names and prices should remain clearly readable in both light mode and dark mode.
+
+### Actual Behavior
+
+In dark mode, the dish names and prices used a dark brown text color, which had very low contrast against the dark card background.
+
+### Root Cause
+
+The `.dish-body` element had a hard-coded text color:
+
+    color: #2b2118;
+
+The application already uses the `--ink` CSS custom property for theme-dependent text colors. The light theme defines `--ink` as `#2b2118`, while the dark theme defines it as `#f2e8df`.
+
+The dish name button uses `color: inherit`, and `.dish-name` does not define its own color, so the dish name inherited the hard-coded color from `.dish-body`. Other text inside the card was affected by the same parent color.
+
+### Fix
+
+Changed the `.dish-body` color from the hard-coded `#2b2118` value to:
+
+    color: var(--ink);
+
+This allows the component to use the appropriate text color for the active theme instead of always using the light-theme color.
+
+### Verification
+
+After the change:
+
+- Checked the menu in dark mode.
+- Confirmed that dish names were clearly visible.
+- Confirmed that dish prices were clearly visible.
+- Switched to light mode and confirmed that the existing light-mode appearance remained readable.
+- Switched between light and dark modes to verify that the theme-dependent text color changed correctly.
+
+### Files Changed
+
+- `frontend/style.css`
+- `LOG.md`
