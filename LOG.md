@@ -68,3 +68,47 @@ stuck is not.
 Anything not on the bug log: a problem you found yourself, a test you
 wrote, or a fix you are unsure about. Same format, plus one line on how
 you noticed it.
+
+## CC-01 — Search suggestions are behind everything
+
+### Reproduction
+
+1. Started the application locally using `npm start`.
+2. Opened `http://localhost:3000`.
+3. Entered `chi` in the search field so that multiple suggestions appeared.
+4. Observed that the lower part of the suggestion dropdown was covered by the category tabs.
+5. The covered suggestions could not be interacted with correctly.
+
+### Expected Behavior
+
+The complete search suggestion dropdown should appear above the category tabs, with all suggestions visible and clickable.
+
+### Actual Behavior
+
+The suggestion dropdown was partially covered by the category tabs. The suggestions were present, but the lower portion of the dropdown was obscured.
+
+### Root Cause
+
+The `.search-wrap` element had `z-index: 1`, while the category tabs had a higher stacking level.
+
+Although `.suggest-box` had `z-index: 100`, it was inside the stacking context created by `.search-wrap`. Therefore, the suggestion box could not appear above the category tabs.
+
+### Fix
+
+Changed the `z-index` of `.search-wrap` from `1` to `50` in `frontend/style.css`.
+
+This places the search wrapper above the category tabs while keeping the existing `z-index: 100` of the suggestion box.
+
+### Verification
+
+After the change:
+
+- Searched for `chi`.
+- Confirmed that the complete suggestion dropdown appeared above the category tabs.
+- Tested multiple suggestions.
+- Confirmed that the suggestions were visible and clickable.
+
+### Files Changed
+
+- `frontend/style.css`
+- `LOG.md`
